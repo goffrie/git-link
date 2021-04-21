@@ -56,4 +56,7 @@
                  (git-link--parse-remote "ssh://git.savannah.gnu.org/srv/git/emacs.git")))
 
   (should (equal '("git.savannah.gnu.org" "emacs")
-                 (git-link--parse-remote "git://git.savannah.gnu.org/emacs.git"))))
+                 (git-link--parse-remote "git://git.savannah.gnu.org/emacs.git")))
+
+  (should (equal '("example.org" "foo")
+                 (git-link--parse-remote "git@example.org:foo.git"))))

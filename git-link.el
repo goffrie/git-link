@@ -362,23 +362,25 @@ return (FILENAME . REVISION) otherwise nil."
           host (url-host parsed))
 
     (when host
-      (when (and (not (string= "/" path))
-                 (not (string= ""  path)))
-        (setq path (substring
-                    (if (string-match "\\.git\\'" path)
-                        (file-name-sans-extension path)
-                      path)
-                    1)))
-
       ;; Fix-up scp style URLs.
       ;; git@foo:UsEr/repo gives a host of foo:user
       ;; We also need to preserve case so we take UsEr from the original url
       (when (string-match ":" host)
         (let ((parts (split-string host ":" t))
               (case-fold-search t))
-          (string-match (concat (car parts) ":\\(" (cadr parts) "\\)/") url)
+          (string-match (concat (car parts) ":\\(" (cadr parts) "\\)/?") url)
           (setq host (car parts)
-                path (concat (match-string 1 url) "/" path))))
+                path (concat (match-string 1 url) path))))
+
+      (when (and (not (string= "/" path))
+                 (not (string= ""  path)))
+        ;; Trim trailing .git
+        (setq path (if (string-match "\\.git\\'" path)
+                        (file-name-sans-extension path)
+                     path))
+        ;; Trim leading slash
+        (when (string-prefix-p "/" path)
+          (setq path (substring path 1))))
 
       ;; Fix-up Azure SSH URLs
       (when (string= "ssh.dev.azure.com" host)
