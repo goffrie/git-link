@@ -372,15 +372,10 @@ return (FILENAME . REVISION) otherwise nil."
           (setq host (car parts)
                 path (concat (match-string 1 url) path))))
 
-      (when (and (not (string= "/" path))
-                 (not (string= ""  path)))
-        ;; Trim trailing .git
-        (setq path (if (string-match "\\.git\\'" path)
-                        (file-name-sans-extension path)
-                     path))
-        ;; Trim leading slash
-        (when (string-prefix-p "/" path)
-          (setq path (substring path 1))))
+      (when (not (string= "/" path))
+        (setq path (string-remove-prefix "/" path)))
+
+      (setq path (string-remove-suffix ".git" path))
 
       ;; Fix-up Azure SSH URLs
       (when (string= "ssh.dev.azure.com" host)
